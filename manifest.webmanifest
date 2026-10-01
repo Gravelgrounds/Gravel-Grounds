@@ -1,0 +1,12 @@
+{
+  "name": "RIDE LOCAL — Gravel & Cycling Guide",
+  "short_name": "RIDE LOCAL",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0d0f10",
+  "theme_color": "#111315",
+  "description": "Ontdek gravelroutes, fietsstops en ritten in Vlaanderen.",
+  "icons": [
+    {"src":"icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
+  ]
+}

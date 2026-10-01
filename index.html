@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#111315">
+  <meta name="description" content="Gravelroutes, fietsstops en inspiratie in Vlaanderen.">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <title>RIDE LOCAL — Gravel & Cycling Guide</title>
+  <style>
+    :root{--bg:#0d0f10;--panel:#171a1c;--panel2:#202427;--text:#f4f4f1;--muted:#9ca3a5;--accent:#c8ff38;--line:#2c3134;--danger:#ff6b6b}
+    *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    button,input,select{font:inherit} button{cursor:pointer}
+    .app{max-width:680px;margin:auto;min-height:100vh;padding-bottom:82px}
+    header{padding:22px 18px 14px;position:sticky;top:0;z-index:10;background:rgba(13,15,16,.94);backdrop-filter:blur(12px);border-bottom:1px solid #202426}
+    .brand{display:flex;justify-content:space-between;align-items:center}.logo{font-weight:900;letter-spacing:.12em;font-size:19px}.logo span{color:var(--accent)}
+    .sub{color:var(--muted);font-size:12px;margin-top:4px}
+    .content{padding:16px 16px 0}.hero{background:linear-gradient(135deg,#242a2d,#151819);border:1px solid var(--line);border-radius:24px;padding:22px;margin-bottom:16px}
+    h1{font-size:32px;line-height:1.02;margin:0 0 10px;letter-spacing:-.04em}.hero p{color:#c5c9ca;margin:0 0 18px;line-height:1.5}
+    .cta{background:var(--accent);color:#101310;border:0;border-radius:14px;padding:12px 16px;font-weight:800}
+    .section-title{display:flex;justify-content:space-between;align-items:center;margin:20px 2px 10px}.section-title h2{font-size:17px;margin:0}.small{font-size:12px;color:var(--muted)}
+    .chips{display:flex;gap:8px;overflow:auto;padding-bottom:4px}.chip{white-space:nowrap;background:var(--panel);border:1px solid var(--line);color:#dfe2e2;padding:9px 13px;border-radius:999px}.chip.active{background:var(--accent);color:#111;border-color:var(--accent);font-weight:700}
+    .cards{display:grid;gap:12px}.card{background:var(--panel);border:1px solid var(--line);border-radius:20px;overflow:hidden}.route-img{height:125px;background:linear-gradient(120deg,#33433b,#77866b 45%,#1b2622);position:relative}.route-img:after{content:"";position:absolute;inset:35% -10% -20%;background:rgba(13,15,16,.35);transform:rotate(-7deg)}
+    .badge{position:absolute;z-index:1;top:12px;left:12px;background:rgba(13,15,16,.78);padding:7px 9px;border-radius:999px;font-size:11px;font-weight:800}.heart{position:absolute;z-index:2;right:10px;top:10px;border:0;background:rgba(13,15,16,.75);color:white;width:38px;height:38px;border-radius:50%;font-size:18px}.heart.saved{color:var(--accent)}
+    .card-body{padding:14px}.card h3{margin:0 0 7px;font-size:18px}.meta{display:flex;gap:12px;color:var(--muted);font-size:12px}.tagline{font-size:13px;color:#c9cdce;margin:8px 0 12px;line-height:1.4}
+    .row{display:flex;gap:8px}.secondary{background:var(--panel2);border:1px solid var(--line);color:var(--text);border-radius:12px;padding:10px 12px}.grow{flex:1}
+    .screen{display:none}.screen.active{display:block}
+    #map{height:430px;border-radius:20px;overflow:hidden;border:1px solid var(--line);margin-top:12px}.map-wrap{position:relative}.map-filter{position:absolute;z-index:500;top:12px;left:12px;right:12px;display:flex;gap:8px;overflow:auto}.map-filter .chip{background:rgba(13,15,16,.9)}
+    .detail-cover{padding:20px;border-radius:22px;background:linear-gradient(135deg,#3e5145,#1b2320);margin-bottom:14px}.back{border:0;background:transparent;color:var(--muted);padding:0;margin-bottom:14px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.stat{background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:12px}.stat b{display:block;font-size:18px}.stat span{font-size:11px;color:var(--muted)}
+    .stop{display:flex;gap:12px;padding:13px 0;border-bottom:1px solid var(--line)}.stop-icon{width:40px;height:40px;border-radius:12px;background:var(--panel2);display:grid;place-items:center}.stop b{display:block}.stop span{font-size:12px;color:var(--muted)}
+    .bottom{position:fixed;bottom:0;left:0;right:0;z-index:1000;background:rgba(18,20,21,.96);border-top:1px solid var(--line);padding:9px max(14px,calc((100vw - 680px)/2 + 14px));display:grid;grid-template-columns:repeat(4,1fr);gap:4px;backdrop-filter:blur(14px)}.nav{border:0;background:transparent;color:var(--muted);padding:6px 2px;border-radius:12px;font-size:11px}.nav.active{color:var(--accent);font-weight:800}.nav .ico{font-size:19px;display:block;margin-bottom:3px}
+    .notice{padding:12px 14px;background:#20281a;border:1px solid #3a4927;border-radius:15px;color:#dbe8c6;font-size:12px;line-height:1.4;margin-top:12px}.empty{padding:25px;text-align:center;color:var(--muted);background:var(--panel);border-radius:18px}
+    .search{width:100%;background:var(--panel);border:1px solid var(--line);color:white;border-radius:14px;padding:12px 14px;margin:8px 0 4px;outline:none}.search:focus{border-color:var(--accent)}
+    @media(min-width:700px){.bottom{max-width:680px;margin:auto}.app{border-left:1px solid #181b1d;border-right:1px solid #181b1d}}
+  </style>
+</head>
+<body>
+<div class="app">
+<header><div class="brand"><div><div class="logo">RIDE <span>LOCAL</span></div><div class="sub">GRAVEL & CYCLING GUIDE · VLAANDEREN</div></div><div>🚲</div></div></header>
+
+<main class="content">
+<section id="home" class="screen active">
+  <div class="hero"><h1>Find your ride.<br>Ride local.</h1><p>Ontdek gravelroutes, fietsvriendelijke stops en ritten die het waard zijn om voor op de fiets te stappen.</p><button class="cta" onclick="showScreen('routes')">Ontdek routes →</button></div>
+  <div class="section-title"><h2>Populaire ritten</h2><span class="small">Vlaanderen</span></div>
+  <div id="homeRoutes" class="cards"></div>
+  <div class="section-title"><h2>Wat zit erin?</h2></div>
+  <div class="notice">✓ Geselecteerde routes · ✓ afstand & hoogtemeters · ✓ GPX-download · ✓ coffee & bike stops · ✓ favorieten op je toestel</div>
+</section>
+
+<section id="routes" class="screen">
+  <div class="section-title"><h2>Routes</h2><span class="small" id="routeCount"></span></div>
+  <input id="search" class="search" placeholder="Zoek op regio of routenaam…" oninput="renderRoutes()">
+  <div class="chips" style="margin:8px 0 10px">
+    <button class="chip active" data-filter="all" onclick="setFilter('all',this)">Alles</button><button class="chip" data-filter="gravel" onclick="setFilter('gravel',this)">Gravel</button><button class="chip" data-filter="road" onclick="setFilter('road',this)">Road</button><button class="chip" data-filter="50" onclick="setFilter('50',this)">±50 km</button><button class="chip" data-filter="75" onclick="setFilter('75',this)">75+ km</button>
+  </div>
+  <div id="routeList" class="cards"></div>
+</section>
+
+<section id="mapScreen" class="screen">
+  <div class="section-title"><h2>Kaart</h2><span class="small">Demo-regio</span></div>
+  <div class="map-wrap"><div id="map"></div></div>
+  <div class="notice">De kaart toont demo-routes rond de Vlaamse Ardennen. In een volgende versie koppelen we echte route- en GPX-data.</div>
+</section>
+
+<section id="saved" class="screen">
+  <div class="section-title"><h2>Mijn ritten</h2><span class="small">op dit toestel</span></div>
+  <div id="savedList" class="cards"></div>
+</section>
+
+<section id="detail" class="screen">
+  <div id="detailContent"></div>
+</section>
+</main>
+</div>
+
+<nav class="bottom">
+  <button class="nav active" data-screen="home" onclick="showScreen('home')"><span class="ico">⌂</span>Home</button>
+  <button class="nav" data-screen="routes" onclick="showScreen('routes')"><span class="ico">◈</span>Routes</button>
+  <button class="nav" data-screen="mapScreen" onclick="showScreen('mapScreen')"><span class="ico">⌖</span>Kaart</button>
+  <button class="nav" data-screen="saved" onclick="showScreen('saved')"><span class="ico">♡</span>Mijn ritten</button>
+</nav>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const routes=[
+ {id:1,name:"Vlaamse Ardennen Gravel Loop",type:"gravel",region:"Oudenaarde",km:58,elev:640,level:"★★★☆☆",desc:"Kasseien, brede gravelstroken en enkele stevige hellingen. Ideaal als stevige zondagsrit.",lat:50.82,lon:3.61,stops:[["☕","De Fietsbar","koffie · 31 km"],["🔧","Bike Service","werkplaats · 46 km"]]},
+ {id:2,name:"Pajottenland Backroads",type:"gravel",region:"Gooik",km:51,elev:520,level:"★★★☆☆",desc:"Rustige wegen, veldwegen en glooiend Pajottenland. Veel variatie zonder extreme klimmen.",lat:50.80,lon:4.08,stops:[["☕","Koffiepunt Gooik","koffie · 24 km"],["🥪","Hoevewinkel","lunch · 39 km"]]},
+ {id:3,name:"Hageland Hills",type:"road",region:"Tienen",km:76,elev:710,level:"★★★★☆",desc:"Een langere rit met korte hellingen en rustige landbouwwegen door het Hageland.",lat:50.81,lon:4.94,stops:[["☕","Peloton Café","koffie · 35 km"],["🔧","Fietsatelier","service · 62 km"]]},
+ {id:4,name:"Brabantse Gravel Explorer",type:"gravel",region:"Leuven",km:72,elev:590,level:"★★★☆☆",desc:"Een mix van gravel en rustige asfaltwegen ten oosten van Leuven.",lat:50.88,lon:4.72,stops:[["☕","Bar Bidon","koffie · 29 km"],["🥤","Waterstop","bevoorrading · 51 km"]]},
+ {id:5,name:"Scheldeland Easy Ride",type:"road",region:"Dendermonde",km:43,elev:210,level:"★★☆☆☆",desc:"Toegankelijke rit voor een korte trainingsdag met weinig hoogtemeters.",lat:51.03,lon:4.10,stops:[["☕","Scheldecafé","koffie · 20 km"]]},
+ {id:6,name:"Flemish Gravel Challenge",type:"gravel",region:"Geraardsbergen",km:89,elev:980,level:"★★★★★",desc:"De zwaarste demo-rit: lange afstand, veel hoogtemeters en enkele bekende Vlaamse hellingen.",lat:50.77,lon:3.88,stops:[["☕","Koppenberg Coffee","koffie · 37 km"],["🔧","Local Bike Shop","service · 70 km"]]}
+];
+let filter='all', currentMap=null;
+const saved=()=>JSON.parse(localStorage.getItem('rideLocalSaved')||'[]');
+function isSaved(id){return saved().includes(id)}
+function toggleSave(id){let s=saved();s=s.includes(id)?s.filter(x=>x!==id):[...s,id];localStorage.setItem('rideLocalSaved',JSON.stringify(s));renderAll()}
+function card(r){
+ return `<article class="card"><div class="route-img"><span class="badge">${r.type==='gravel'?'GRAVEL':'ROAD'} · ${r.region}</span><button class="heart ${isSaved(r.id)?'saved':''}" onclick="toggleSave(${r.id})">${isSaved(r.id)?'♥':'♡'}</button></div><div class="card-body"><h3>${r.name}</h3><div class="meta"><span>↔ ${r.km} km</span><span>↗ ${r.elev} hm</span><span>${r.level}</span></div><p class="tagline">${r.desc}</p><div class="row"><button class="secondary grow" onclick="openDetail(${r.id})">Bekijk rit</button><button class="secondary" onclick="downloadGPX(${r.id})">GPX</button></div></div></article>`
+}
+function renderRoutes(){
+ const q=(document.getElementById('search')?.value||'').toLowerCase();
+ let list=routes.filter(r=>(filter==='all'||filter===r.type||(filter==='50'&&r.km>=45&&r.km<=60)||(filter==='75'&&r.km>=75)) && (!q||`${r.name} ${r.region}`.toLowerCase().includes(q)));
+ document.getElementById('routeList').innerHTML=list.length?list.map(card).join(''):`<div class="empty">Geen routes gevonden.</div>`;
+ document.getElementById('routeCount').textContent=`${list.length} routes`;
+}
+function renderAll(){
+ document.getElementById('homeRoutes').innerHTML=routes.slice(0,3).map(card).join('');
+ renderRoutes();
+ const sl=routes.filter(r=>isSaved(r.id));
+ document.getElementById('savedList').innerHTML=sl.length?sl.map(card).join(''):`<div class="empty">Nog geen favoriete ritten.<br><br>Druk op ♡ bij een route om ze hier te bewaren.</div>`;
+}
+function setFilter(f,el){filter=f;document.querySelectorAll('[data-filter]').forEach(x=>x.classList.remove('active'));el.classList.add('active');renderRoutes()}
+function showScreen(id){
+ document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active');
+ document.querySelectorAll('.nav').forEach(x=>x.classList.toggle('active',x.dataset.screen===id));
+ window.scrollTo({top:0,behavior:'smooth'});
+ if(id==='mapScreen')setTimeout(initMap,50);
+}
+function openDetail(id){
+ const r=routes.find(x=>x.id===id);
+ document.getElementById('detailContent').innerHTML=`<button class="back" onclick="showScreen('routes')">← Terug naar routes</button>
+ <div class="detail-cover"><span class="badge">${r.type.toUpperCase()} · ${r.region}</span><h1 style="margin-top:38px">${r.name}</h1><p>${r.desc}</p></div>
+ <div class="stats"><div class="stat"><b>${r.km} km</b><span>afstand</span></div><div class="stat"><b>${r.elev} hm</b><span>hoogtemeters</span></div><div class="stat"><b>${r.level}</b><span>niveau</span></div></div>
+ <div class="row" style="margin:14px 0"><button class="cta grow" onclick="downloadGPX(${r.id})">GPX downloaden</button><button class="secondary" onclick="toggleSave(${r.id})">${isSaved(r.id)?'♥ Opgeslagen':'♡ Bewaren'}</button></div>
+ <h2 style="font-size:17px;margin-top:24px">Coffee & Stops</h2>${r.stops.map(s=>`<div class="stop"><div class="stop-icon">${s[0]}</div><div><b>${s[1]}</b><span>${s[2]}</span></div></div>`).join('')}
+ <div class="notice">Demo-inhoud: routegegevens en stops zijn voorbeelddata voor het prototype en nog niet bedoeld als actuele navigatie-informatie.</div>`;
+ showScreen('detail');
+}
+function downloadGPX(id){
+ const r=routes.find(x=>x.id===id);
+ const gpx=`<?xml version="1.0" encoding="UTF-8"?><gpx version="1.1" creator="RIDE LOCAL Prototype" xmlns="http://www.topografix.com/GPX/1/1"><metadata><name>${r.name}</name><desc>Demo GPX — vervang door echte routegegevens.</desc></metadata><trk><name>${r.name}</name><trkseg><trkpt lat="${r.lat}" lon="${r.lon}"></trkpt><trkpt lat="${r.lat+.01}" lon="${r.lon+.02}"></trkpt><trkpt lat="${r.lat-.008}" lon="${r.lon+.03}"></trkpt><trkpt lat="${r.lat-.015}" lon="${r.lon-.01}"></trkpt><trkpt lat="${r.lat}" lon="${r.lon}"></trkpt></trkseg></trk></gpx>`;
+ const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([gpx],{type:'application/gpx+xml'}));a.download=r.name.replace(/[^a-z0-9]+/gi,'-').toLowerCase()+'.gpx';a.click();URL.revokeObjectURL(a.href);
+}
+function initMap(){
+ if(currentMap)return;
+ currentMap=L.map('map').setView([50.83,4.0],9);
+ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap contributors'}).addTo(currentMap);
+ routes.forEach(r=>{const m=L.marker([r.lat,r.lon]).addTo(currentMap);m.bindPopup(`<b>${r.name}</b><br>${r.km} km · ${r.elev} hm<br><br><button onclick="openDetail(${r.id})">Bekijk rit</button>`)});
+}
+if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+renderAll();
+</script>
+</body>
+</html>
