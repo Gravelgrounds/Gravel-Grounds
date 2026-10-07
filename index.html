@@ -8,7 +8,7 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-  <title>RIDE LOCAL — Gravel & Cycling Guide</title>
+  <title>GRAVEL GROUNDS — Gravel & Cycling Guide</title>
   <style>
     :root{--bg:#0d0f10;--panel:#171a1c;--panel2:#202427;--text:#f4f4f1;--muted:#9ca3a5;--accent:#c8ff38;--line:#2c3134;--danger:#ff6b6b}
     *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
@@ -130,7 +130,7 @@ function openDetail(id){
 }
 function downloadGPX(id){
  const r=routes.find(x=>x.id===id);
- const gpx=`<?xml version="1.0" encoding="UTF-8"?><gpx version="1.1" creator="RIDE LOCAL Prototype" xmlns="http://www.topografix.com/GPX/1/1"><metadata><name>${r.name}</name><desc>Demo GPX — vervang door echte routegegevens.</desc></metadata><trk><name>${r.name}</name><trkseg><trkpt lat="${r.lat}" lon="${r.lon}"></trkpt><trkpt lat="${r.lat+.01}" lon="${r.lon+.02}"></trkpt><trkpt lat="${r.lat-.008}" lon="${r.lon+.03}"></trkpt><trkpt lat="${r.lat-.015}" lon="${r.lon-.01}"></trkpt><trkpt lat="${r.lat}" lon="${r.lon}"></trkpt></trkseg></trk></gpx>`;
+ const gpx=`<?xml version="1.0" encoding="UTF-8"?><gpx version="1.1" creator="GRAVEL GROUNDS Prototype" xmlns="http://www.topografix.com/GPX/1/1"><metadata><name>${r.name}</name><desc>Demo GPX — vervang door echte routegegevens.</desc></metadata><trk><name>${r.name}</name><trkseg><trkpt lat="${r.lat}" lon="${r.lon}"></trkpt><trkpt lat="${r.lat+.01}" lon="${r.lon+.02}"></trkpt><trkpt lat="${r.lat-.008}" lon="${r.lon+.03}"></trkpt><trkpt lat="${r.lat-.015}" lon="${r.lon-.01}"></trkpt><trkpt lat="${r.lat}" lon="${r.lon}"></trkpt></trkseg></trk></gpx>`;
  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([gpx],{type:'application/gpx+xml'}));a.download=r.name.replace(/[^a-z0-9]+/gi,'-').toLowerCase()+'.gpx';a.click();URL.revokeObjectURL(a.href);
 }
 function initMap(){
