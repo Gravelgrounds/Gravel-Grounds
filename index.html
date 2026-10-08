@@ -38,11 +38,11 @@
 </head>
 <body>
 <div class="app">
-<header><div class="brand"><div><div class="logo">RIDE <span>LOCAL</span></div><div class="sub">GRAVEL & CYCLING GUIDE · VLAANDEREN</div></div><div>🚲</div></div></header>
+<header><div class="brand"><div><div class="logo">GRAVEL <span>GROUNDS</span></div><div class="sub">GRAVEL & CYCLING GUIDE · VLAANDEREN</div></div><div>🚲</div></div></header>
 
 <main class="content">
 <section id="home" class="screen active">
-  <div class="hero"><h1>Find your ride.<br>Ride local.</h1><p>Ontdek gravelroutes, fietsvriendelijke stops en ritten die het waard zijn om voor op de fiets te stappen.</p><button class="cta" onclick="showScreen('routes')">Ontdek routes →</button></div>
+  <div class="hero"><h1>Find your ride.<br>Gravel Grounds.</h1><p>Ontdek gravelroutes, fietsvriendelijke stops en ritten die het waard zijn om voor op de fiets te stappen.</p><button class="cta" onclick="showScreen('routes')">Ontdek routes →</button></div>
   <div class="section-title"><h2>Populaire ritten</h2><span class="small">Vlaanderen</span></div>
   <div id="homeRoutes" class="cards"></div>
   <div class="section-title"><h2>Wat zit erin?</h2></div>
@@ -93,9 +93,9 @@ const routes=[
  {id:6,name:"Flemish Gravel Challenge",type:"gravel",region:"Geraardsbergen",km:89,elev:980,level:"★★★★★",desc:"De zwaarste demo-rit: lange afstand, veel hoogtemeters en enkele bekende Vlaamse hellingen.",lat:50.77,lon:3.88,stops:[["☕","Koppenberg Coffee","koffie · 37 km"],["🔧","Local Bike Shop","service · 70 km"]]}
 ];
 let filter='all', currentMap=null;
-const saved=()=>JSON.parse(localStorage.getItem('rideLocalSaved')||'[]');
+const saved=()=>JSON.parse(localStorage.getItem('gravelGroundsSaved')||'[]');
 function isSaved(id){return saved().includes(id)}
-function toggleSave(id){let s=saved();s=s.includes(id)?s.filter(x=>x!==id):[...s,id];localStorage.setItem('rideLocalSaved',JSON.stringify(s));renderAll()}
+function toggleSave(id){let s=saved();s=s.includes(id)?s.filter(x=>x!==id):[...s,id];localStorage.setItem('gravelGroundsSaved',JSON.stringify(s));renderAll()}
 function card(r){
  return `<article class="card"><div class="route-img"><span class="badge">${r.type==='gravel'?'GRAVEL':'ROAD'} · ${r.region}</span><button class="heart ${isSaved(r.id)?'saved':''}" onclick="toggleSave(${r.id})">${isSaved(r.id)?'♥':'♡'}</button></div><div class="card-body"><h3>${r.name}</h3><div class="meta"><span>↔ ${r.km} km</span><span>↗ ${r.elev} hm</span><span>${r.level}</span></div><p class="tagline">${r.desc}</p><div class="row"><button class="secondary grow" onclick="openDetail(${r.id})">Bekijk rit</button><button class="secondary" onclick="downloadGPX(${r.id})">GPX</button></div></div></article>`
 }

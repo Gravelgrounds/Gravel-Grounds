@@ -1,4 +1,4 @@
-RIDE LOCAL — gratis PWA prototype
+GRAVEL GROUNDS — gratis PWA prototype
 =================================
 
 Wat werkt nu:
