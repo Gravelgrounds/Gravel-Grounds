@@ -76,10 +76,10 @@
 </div>
 
 <nav class="bottom">
-  <button class="nav active" data-screen="home" onclick="showScreen('home')"><span class="ico">⌂</span>Home</button>
-  <button class="nav" data-screen="routes" onclick="showScreen('routes')"><span class="ico">◈</span>Routes</button>
-  <button class="nav" data-screen="mapScreen" onclick="showScreen('mapScreen')"><span class="ico">⌖</span>Kaart</button>
-  <button class="nav" data-screen="saved" onclick="showScreen('saved')"><span class="ico">♡</span>Mijn ritten</button>
+  <button class="nav active" data-screen="home" onclick="('home')"><span class="ico">⌂</span>Home</button>
+  <button class="nav" data-screen="routes" onclick="('routes')"><span class="ico">◈</span>Routes</button>
+  <button class="nav" data-screen="mapScreen" onclick="('mapScreen')"><span class="ico">⌖</span>Kaart</button>
+  <button class="nav" data-screen="saved" onclick="('saved')"><span class="ico">♡</span>Mijn ritten</button>
 </nav>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -127,6 +127,23 @@ function openDetail(id){
  <h2 style="font-size:17px;margin-top:24px">Coffee & Stops</h2>${r.stops.map(s=>`<div class="stop"><div class="stop-icon">${s[0]}</div><div><b>${s[1]}</b><span>${s[2]}</span></div></div>`).join('')}
  <div class="notice">Demo-inhoud: routegegevens en stops zijn voorbeelddata voor het prototype en nog niet bedoeld als actuele navigatie-informatie.</div>`;
  showScreen('detail');
+  setTimeout(()=>initRouteDetailMap(r),300);
+}
+function initRouteDetailMap(r){
+  const el = document.getElementById('routeDetailMap');
+  if(!el || !window.L) return;
+  if(el._leaflet_id){
+    el._leaflet_id = null;
+  }
+  const map = L.map(el).setView([r.lat, r.lon], 11);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
+  L.marker([r.lat, r.lon])
+    .addTo(map)
+    .bindPopup(r.name)
+    .openPopup();
+  setTimeout(()=>map.invalidateSize(),200);
 }
 function downloadGPX(id){
  const r=routes.find(x=>x.id===id);
