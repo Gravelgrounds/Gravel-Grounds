@@ -125,6 +125,7 @@ function openDetail(id){
  <div class="stats"><div class="stat"><b>${r.km} km</b><span>afstand</span></div><div class="stat"><b>${r.elev} hm</b><span>hoogtemeters</span></div><div class="stat"><b>${r.level}</b><span>niveau</span></div></div>
  <div class="row" style="margin:14px 0"><button class="cta grow" onclick="downloadGPX(${r.id})">GPX downloaden</button><button class="secondary" onclick="toggleSave(${r.id})">${isSaved(r.id)?'♥ Opgeslagen':'♡ Bewaren'}</button></div>
  <div id="routeDetailMap" style="height:300px;border-radius:16px;margin:20px 0;"></div>
+ <div id="routeDetailMap" style="height:300px;border-radius:16px;margin:20px 0;"></div>
  <h2 style="font-size:17px;margin-top:24px">Coffee & Stops</h2>${r.stops.map(s=>`<div class="stop"><div class="stop-icon">${s[0]}</div><div><b>${s[1]}</b><span>${s[2]}</span></div></div>`).join('')}
  <div class="notice">Demo-inhoud: routegegevens en stops zijn voorbeelddata voor het prototype en nog niet bedoeld als actuele navigatie-informatie.</div>`;
  showScreen('detail');
