@@ -76,10 +76,10 @@
 </div>
 
 <nav class="bottom">
-  <button class="nav active" data-screen="home" onclick="('home')"><span class="ico">⌂</span>Home</button>
-  <button class="nav" data-screen="routes" onclick="('routes')"><span class="ico">◈</span>Routes</button>
-  <button class="nav" data-screen="mapScreen" onclick="('mapScreen')"><span class="ico">⌖</span>Kaart</button>
-  <button class="nav" data-screen="saved" onclick="('saved')"><span class="ico">♡</span>Mijn ritten</button>
+  <button class="nav active" data-screen="home" onclick="showScreen('home')"><span class="ico">⌂</span>Home</button>
+  <button class="nav" data-screen="routes" onclick="showScreen('routes')"><span class="ico">◈</span>Routes</button>
+  <button class="nav" data-screen="mapScreen" onclick="showScreen('mapScreen')"><span class="ico">⌖</span>Kaart</button>
+  <button class="nav" data-screen="saved" onclick="showScreen('saved')"><span class="ico">♡</span>Mijn ritten</button>
 </nav>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
