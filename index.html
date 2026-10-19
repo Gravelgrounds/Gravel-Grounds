@@ -90,8 +90,8 @@ const routes=[
  {id:3,name:"Hageland Hills",type:"road",region:"Tienen",km:76,elev:710,level:"★★★★☆",desc:"Een langere rit met korte hellingen en rustige landbouwwegen door het Hageland.",lat:50.81,lon:4.94,stops:[["☕","Peloton Café","koffie · 35 km"],["🔧","Fietsatelier","service · 62 km"]]},
  {id:4,name:"Brabantse Gravel Explorer",type:"gravel",region:"Leuven",km:72,elev:590,level:"★★★☆☆",desc:"Een mix van gravel en rustige asfaltwegen ten oosten van Leuven.",lat:50.88,lon:4.72,stops:[["☕","Bar Bidon","koffie · 29 km"],["🥤","Waterstop","bevoorrading · 51 km"]]},
  {id:5,name:"Scheldeland Easy Ride",type:"road",region:"Dendermonde",km:43,elev:210,level:"★★☆☆☆",desc:"Toegankelijke rit voor een korte trainingsdag met weinig hoogtemeters.",lat:51.03,lon:4.10,stops:[["☕","Scheldecafé","koffie · 20 km"]]},
- {id:6,name:"Flemish Gravel Challenge",type:"gravel",region:"Geraardsbergen",km:89,elev:980,level:"★★★★★",desc:"De zwaarste demo-rit: lange afstand, veel hoogtemeters en enkele bekende Vlaamse hellingen.",lat:50.77,lon:3.88,stops:[["☕","Koppenberg Coffee","koffie · 37 km"],["🔧","Local Bike Shop","service · 70 km"]]}
-];
+ {id:6,name:"Flemish Gravel Challenge",type:"gravel",region:"Geraardsbergen",km:89,elev:980,level:"★★★★★",desc:"De zwaarste demo-rit: lange afstand, veel hoogtemeters en enkele bekende Vlaamse hellingen.",lat:50.77,lon:3.88,stops:[["☕","Koppenberg Coffee","koffie · 37 km"],["🔧","Local Bike Shop","service · 70 km"]]},
+ {id:7,name:"Gravelroute Mol",type:"gravel",region:"Mol",km:52,elev:0,level:"★★★☆☆",desc:"Echte GPS-track door de omgeving van Mol. Hoogtemeters nog te controleren.",lat:51.17928,lon:5.11383,gpx:"gravelroute-mol-52km.gpx",stops:[["📍","Startpunt","Mol"]]}];
 let filter='all', currentMap=null;
 const saved=()=>JSON.parse(localStorage.getItem('gravelGroundsSaved')||'[]');
 function isSaved(id){return saved().includes(id)}
@@ -130,21 +130,55 @@ function openDetail(id){
  showScreen('detail');
   setTimeout(()=>initRouteDetailMap(r),300);
 }
-function initRouteDetailMap(r){
+async function initRouteDetailMap(r){
   const el = document.getElementById('routeDetailMap');
   if(!el || !window.L) return;
+
   if(el._leaflet_id){
     el._leaflet_id = null;
   }
+
   const map = L.map(el).setView([r.lat, r.lon], 11);
+
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
     attribution: '&copy; OpenStreetMap contributors'
   }).addTo(map);
-  L.marker([r.lat, r.lon])
-    .addTo(map)
-    .bindPopup(r.name)
-    .openPopup();
-  setTimeout(()=>map.invalidateSize(),200);
+
+  if(r.gpx){
+    try{
+      const response = await fetch(r.gpx);
+      if(!response.ok) throw new Error('GPX-bestand niet gevonden');
+
+      const xml = new DOMParser().parseFromString(
+        await response.text(), 'application/xml'
+      );
+
+      const points = [...xml.getElementsByTagNameNS(
+        'http://www.topografix.com/GPX/1/1', 'trkpt'
+      )].map(p => [
+        Number(p.getAttribute('lat')),
+        Number(p.getAttribute('lon'))
+      ]);
+
+      if(!points.length) throw new Error('Geen GPS-punten gevonden');
+
+      const track = L.polyline(points,{
+        color:'#c8ff38',
+        weight:5,
+        opacity:0.9
+      }).addTo(map);
+
+      L.marker(points[0]).addTo(map).bindPopup('Start Gravelroute Mol');
+      L.marker(points[points.length-1]).addTo(map).bindPopup('Einde Gravelroute Mol');
+
+      map.fitBounds(track.getBounds(),{padding:[20,20]});
+    }catch(error){
+      console.error('GPX laden mislukt:',error);
+      L.marker([r.lat,r.lon]).addTo(map).bindPopup(r.name);
+    }
+  }else{
+    L.marker([r.lat,r.lon]).addTo(map).bindPopup(r.name);
+  }
 }
 function downloadGPX(id){
  const r=routes.find(x=>x.id===id);
