@@ -182,9 +182,30 @@ async function initRouteDetailMap(r){
 
         if (!Number.isFinite(lat) || !Number.isFinite(lon)) return;
 
-        L.marker([lat, lon])
-          .addTo(map)
-          .bindPopup(name);
+        const type = (
+          wpt.getElementsByTagNameNS('*', 'type')[0]?.textContent || ''
+        ).toLowerCase();
+
+        let emoji = '📍';
+
+        if (/cafe|koffie|eet|drink|restaurant|horeca/.test(type + ' ' + name.toLowerCase())) {
+          emoji = '☕';
+        } else if (/kapel|kerk|museum|monument|erfgoed|molen|kunst|toeristisch|observatiepunt/.test(type + ' ' + name.toLowerCase())) {
+          emoji = '📸';
+        } else if (/duin|heide|rivier|water|natuur|hut|buitenactiviteit/.test(type + ' ' + name.toLowerCase())) {
+          emoji = '🌿';
+        }
+
+        L.marker([lat, lon], {
+          icon: L.divIcon({
+            className: 'gravel-stop-icon',
+            html: `<span style="display:flex;align-items:center;justify-content:center;width:30px;height:30px;background:#c8ff38;border:2px solid white;border-radius:50%;font-size:16px;box-shadow:0 2px 6px #0005">${emoji}</span>`,
+            iconSize: [34, 34],
+            iconAnchor: [17, 17]
+          })
+        })
+        .addTo(map)
+        .bindPopup(name);
       });
       map.fitBounds(track.getBounds(),{padding:[20,20]});
     }catch(error){
