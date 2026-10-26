@@ -170,36 +170,21 @@ async function initRouteDetailMap(r){
 
       L.marker(points[0]).addTo(map).bindPopup('Start Gravelroute Mol');
       L.marker(points[points.length-1]).addTo(map).bindPopup('Einde Gravelroute Mol');
-      const gpxResponse = await fetch(r.gpx);
-      const gpxText = await gpxResponse.text();
-      const gpxXml = new DOMParser().parseFromString(
-        gpxText, 'application/xml'
-      );
-
       const waypoints = [
-        ...gpxXml.getElementsByTagNameNS(
-          'http://www.topografix.com/GPX/1/1',
-          'wpt'
-        )
+        ...gpxXml.getElementsByTagNameNS('*', 'wpt')
       ];
 
       waypoints.forEach(wpt => {
-        const lat = Number(wpt.getAttribute('lat'));
-        const lon = Number(wpt.getAttribute('lon'));
-        const name = wpt.getElementsByTagNameNS(
-          'http://www.topografix.com/GPX/1/1',
-          'name'
-        )[0]?.textContent || 'Interessante plek';
+        const lat = parseFloat(wpt.getAttribute('lat'));
+        const lon = parseFloat(wpt.getAttribute('lon'));
+        const name = wpt.getElementsByTagNameNS('*', 'name')[0]?.textContent
+          || 'Interessante plek';
 
-        L.circleMarker([lat, lon], {
-          radius: 6,
-          color: '#ffffff',
-          weight: 2,
-          fillColor: '#c8ff38',
-          fillOpacity: 1
-        })
-        .addTo(map)
-        .bindPopup(name);
+        if (!Number.isFinite(lat) || !Number.isFinite(lon)) return;
+
+        L.marker([lat, lon])
+          .addTo(map)
+          .bindPopup(name);
       });
       map.fitBounds(track.getBounds(),{padding:[20,20]});
     }catch(error){
