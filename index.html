@@ -171,42 +171,21 @@ async function initRouteDetailMap(r){
       L.marker(points[0]).addTo(map).bindPopup('Start Gravelroute Mol');
       L.marker(points[points.length-1]).addTo(map).bindPopup('Einde Gravelroute Mol');
       const waypoints = [
-        ...gpxXml.getElementsByTagNameNS('*', 'wpt')
-      ];
+  ...gpxXml.getElementsByTagNameNS('*', 'wpt')
+];
 
-      waypoints.forEach(wpt => {
-        const lat = parseFloat(wpt.getAttribute('lat'));
-        const lon = parseFloat(wpt.getAttribute('lon'));
-        const name = wpt.getElementsByTagNameNS('*', 'name')[0]?.textContent
-          || 'Interessante plek';
+waypoints.forEach(wpt => {
+  const lat = Number(wpt.getAttribute('lat'));
+  const lon = Number(wpt.getAttribute('lon'));
+  const name = wpt.getElementsByTagNameNS('*', 'name')[0]?.textContent
+    || 'Interessante plek';
 
-        if (!Number.isFinite(lat) || !Number.isFinite(lon)) return;
+  if (!Number.isFinite(lat) || !Number.isFinite(lon)) return;
 
-        const type = (
-          wpt.getElementsByTagNameNS('*', 'type')[0]?.textContent || ''
-        ).toLowerCase();
-
-        let emoji = '📍';
-
-        if (/cafe|koffie|eet|drink|restaurant|horeca/.test(type + ' ' + name.toLowerCase())) {
-          emoji = '☕';
-        } else if (/kapel|kerk|museum|monument|erfgoed|molen|kunst|toeristisch|observatiepunt/.test(type + ' ' + name.toLowerCase())) {
-          emoji = '📸';
-        } else if (/duin|heide|rivier|water|natuur|hut|buitenactiviteit/.test(type + ' ' + name.toLowerCase())) {
-          emoji = '🌿';
-        }
-
-        L.marker([lat, lon], {
-          icon: L.divIcon({
-            className: 'gravel-stop-icon',
-            html: `<span style="display:flex;align-items:center;justify-content:center;width:30px;height:30px;background:#c8ff38;border:2px solid white;border-radius:50%;font-size:16px;box-shadow:0 2px 6px #0005">${emoji}</span>`,
-            iconSize: [34, 34],
-            iconAnchor: [17, 17]
-          })
-        })
-        .addTo(map)
-        .bindPopup(name);
-      });
+  L.marker([lat, lon])
+    .addTo(map)
+    .bindPopup(name);
+});
       map.fitBounds(track.getBounds(),{padding:[20,20]});
     }catch(error){
       console.error('GPX laden mislukt:',error);
