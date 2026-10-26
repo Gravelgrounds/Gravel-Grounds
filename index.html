@@ -173,7 +173,7 @@ async function initRouteDetailMap(r){
       const waypoints = [
   ...xml.getElementsByTagNameNS('*', 'wpt')
 ];
-
+console.log('Aantal gevonden waypoints:', waypoints.length);
 waypoints.forEach(wpt => {
   const lat = Number(wpt.getAttribute('lat'));
   const lon = Number(wpt.getAttribute('lon'));
