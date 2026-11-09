@@ -170,24 +170,55 @@ async function initRouteDetailMap(r){
 
       L.marker(points[0]).addTo(map).bindPopup('Start Gravelroute Mol');
       L.marker(points[points.length-1]).addTo(map).bindPopup('Einde Gravelroute Mol');
-      const waypoints = [
+      const toegelatenLocaties = [
+  'schuilhut Volmolenweg',
+  'Street Art Mol',
+  'De Bonte Os',
+  'Sportcafé De Finale',
+  'De Oude Jager',
+  'Lourdesgrot',
+  'begroeide duinen',
+  'Buitenspeeltuin Galbergen',
+  'St.-Antoniuskapel',
+  'Jakob Smitsmuseum',
+  'De Primeur',
+  "'t Voske",
+  "Café 't Smetje - verzameling wielertruitjes",
+  'Kempense paraboolduin',
+  "'t Feynends Heike"
+];
+
+const waypoints = [
   ...xml.getElementsByTagNameNS('*', 'wpt')
 ];
-      
+
 console.log('Aantal gevonden waypoints:', waypoints.length);
-      
+
+const getCoordKey = (lat, lon) =>
+  `${lat.toFixed(5)},${lon.toFixed(5)}`;
+
+const getoond = new Set();
+
 waypoints.forEach(wpt => {
   const lat = Number(wpt.getAttribute('lat'));
   const lon = Number(wpt.getAttribute('lon'));
+
   const name = wpt.getElementsByTagNameNS('*', 'name')[0]?.textContent
-    || 'Interessante plek';
+    ?.trim() || 'Interessante plek';
 
   if (!Number.isFinite(lat) || !Number.isFinite(lon)) return;
+  if (!toegelatenLocaties.includes(name)) return;
+
+  const key = getCoordKey(lat, lon);
+  if (getoond.has(key)) return;
+  getoond.add(key);
 
   L.marker([lat, lon])
     .addTo(map)
     .bindPopup(name);
 });
+
+console.log('Aantal getoonde locaties:', getoond.size);
       map.fitBounds(track.getBounds(),{padding:[20,20]});
     }catch(error){
       console.error('GPX laden mislukt:',error);
